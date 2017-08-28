@@ -58,15 +58,30 @@
  <dependencies>   
 
     <!-- jtransactions has no fixed 3rd party dependencies, but has an optional Spring dependencies  -->
-    <!-- For projects only use TinyTx, no need add spring-tx in project's pom.xml, if use Spring-TX, need copy below dependency your pom.xml and delete the optional line -->	
-	<dependency>
+    
+    <!-- For projects only use TinyTx, no need add spring-tx in project's pom.xml, but if want use SpringTX, 
+       need copy below dependency to project's pom.xml and delete the optional lines, there is no easy way to 
+       extract Spring's transaction services without add lots Spring's dependencies,  I don't like it -->	
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
-      <version>4.3.10.RELEASE</version>
-	  <scope>compile</scope>
+      <version>4.3.10.RELEASE</version> 
 	  <optional>true</optional>
     </dependency> 
 	
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>4.3.10.RELEASE</version>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+      <version>4.3.10.RELEASE</version>
+      <optional>true</optional>
+    </dependency>
 	
     <!-- ============================================================================= -->
     <!-- Below dependencies are for unit test only, scope set to "test"                --> 
@@ -96,7 +111,7 @@
     <dependency>
       <groupId>com.github.drinkjava2</groupId>
       <artifactId>jbeanbox</artifactId>
-      <version>2.4.4</version>
+      <version>2.4.5</version>
       <scope>test</scope>
     </dependency>  
     

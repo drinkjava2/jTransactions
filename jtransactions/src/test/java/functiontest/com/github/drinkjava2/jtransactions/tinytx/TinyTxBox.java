@@ -5,7 +5,7 @@ import java.sql.Connection;
 import com.github.drinkjava2.jbeanbox.BeanBox;
 import com.github.drinkjava2.jtransactions.tinytx.TinyTx;
 
-import functiontest.DataSourceConfig.DataSourceBox;
+import functiontest.com.github.drinkjava2.jtransactions.DataSourceConfig.DataSourceBox;
 
 /**
  * A TinyTx configuration

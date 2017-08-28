@@ -1,4 +1,4 @@
-package functiontest;
+package functiontest.com.github.drinkjava2.jtransactions;
 
 import com.github.drinkjava2.jbeanbox.BeanBox;
 import com.zaxxer.hikari.HikariDataSource;

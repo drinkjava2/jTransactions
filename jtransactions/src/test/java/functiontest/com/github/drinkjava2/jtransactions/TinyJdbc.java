@@ -1,4 +1,4 @@
-package functiontest.com.github.drinkjava2.jtransactions.tinytx;
+package functiontest.com.github.drinkjava2.jtransactions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,9 +26,11 @@ public class TinyJdbc {
 
 	@SuppressWarnings("unchecked")
 	public <T> T queryForObject(String sql) {
+		System.out.println("SQL="+sql);
 		Connection con = getConnection();
-		PreparedStatement pst = null;
+ 		PreparedStatement pst = null;
 		try {
+			//System.out.println("Con="+con.hashCode()+", autoCommit="+con.getAutoCommit());	
 			pst = con.prepareStatement(sql);
 			ResultSet rs = pst.executeQuery();
 			rs.next();
@@ -44,9 +46,11 @@ public class TinyJdbc {
 	}
 
 	public void executeSql(String sql) {
+		System.out.println("SQL="+sql);
 		Connection con = getConnection();
 		PreparedStatement pst = null;
 		try {
+			//System.out.println("Con="+con.hashCode()+", autoCommit="+con.getAutoCommit());	
 			pst = con.prepareStatement(sql);
 			pst.execute();
 		} catch (SQLException e) {
