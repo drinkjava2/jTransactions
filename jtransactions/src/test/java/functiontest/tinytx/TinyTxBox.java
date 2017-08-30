@@ -1,11 +1,11 @@
-package functiontest.com.github.drinkjava2.jtransactions.tinytx;
+package functiontest.tinytx;
 
 import java.sql.Connection;
 
 import com.github.drinkjava2.jbeanbox.BeanBox;
 import com.github.drinkjava2.jtransactions.tinytx.TinyTx;
 
-import functiontest.com.github.drinkjava2.jtransactions.DataSourceConfig.DataSourceBox;
+import functiontest.DataSourceConfig.DataSourceBox;
 
 /**
  * A TinyTx configuration

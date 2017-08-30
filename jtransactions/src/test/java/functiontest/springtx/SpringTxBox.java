@@ -1,4 +1,4 @@
-package functiontest.com.github.drinkjava2.jtransactions.springtx;
+package functiontest.springtx;
 
 import java.util.Properties;
 
@@ -9,7 +9,7 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 import com.github.drinkjava2.jbeanbox.BeanBox;
 
-import functiontest.com.github.drinkjava2.jtransactions.DataSourceConfig.DataSourceBox;
+import functiontest.DataSourceConfig.DataSourceBox;
 
 /**
  * A SpringTX configuration demo

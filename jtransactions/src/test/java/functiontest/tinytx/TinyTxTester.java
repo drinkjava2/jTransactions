@@ -1,4 +1,4 @@
-package functiontest.com.github.drinkjava2.jtransactions.springtx;
+package functiontest.tinytx;
 
 import javax.sql.DataSource;
 
@@ -7,10 +7,10 @@ import org.junit.Test;
 
 import com.github.drinkjava2.jbeanbox.AopAround;
 import com.github.drinkjava2.jbeanbox.BeanBox;
-import com.github.drinkjava2.jtransactions.springtx.SpringConnectionManager;
+import com.github.drinkjava2.jtransactions.tinytx.TinyTxConnectionManager;
 
-import functiontest.com.github.drinkjava2.jtransactions.DataSourceConfig.DataSourceBox;
-import functiontest.com.github.drinkjava2.jtransactions.TinyJdbc;
+import functiontest.DataSourceConfig.DataSourceBox;
+import functiontest.TinyJdbc;
 
 /**
  * This is to test TinyTx Declarative Transaction
@@ -20,16 +20,15 @@ import functiontest.com.github.drinkjava2.jtransactions.TinyJdbc;
  * @version 1.0.0
  * @since 1.0.0
  */
+public class TinyTxTester {
+	TinyJdbc tiny = new TinyJdbc((DataSource) BeanBox.getBean(DataSourceBox.class), TinyTxConnectionManager.instance());
 
-public class SpringTxTester {
-	TinyJdbc tiny = new TinyJdbc((DataSource) BeanBox.getBean(DataSourceBox.class), SpringConnectionManager.instance());
-
-	@AopAround(SpringTxBox.class)
+	@AopAround(TinyTxBox.class)
 	public void tx_Insert1() {
 		tiny.executeSql("insert into users (id) values('123')");
 	}
 
-	@AopAround(SpringTxBox.class)
+	@AopAround(TinyTxBox.class)
 	public void tx_Insert2() {
 		tiny.executeSql("insert into users (id) values('456')");
 		Assert.assertEquals(2L, tiny.queryForObject("select count(*) from users"));
@@ -39,8 +38,8 @@ public class SpringTxTester {
 
 	@Test
 	public void doTest() {
-		System.out.println("============Testing: SpringTxTester============");
-		SpringTxTester tester = BeanBox.getBean(SpringTxTester.class);
+		System.out.println("============Testing: TinyTxTester============");
+		TinyTxTester tester = BeanBox.getBean(TinyTxTester.class);
 
 		try {
 			tiny.executeSql("drop table users");
@@ -53,7 +52,8 @@ public class SpringTxTester {
 		try {
 			tester.tx_Insert1();// this one inserted 1 record
 			tester.tx_Insert2();// this one did not insert, roll back
-		} catch (Exception e) { 
+		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println("div/0 exception found, tx_Insert2 should roll back");
 		}
 		Assert.assertEquals(1L, tiny.queryForObject("select count(*) from users"));

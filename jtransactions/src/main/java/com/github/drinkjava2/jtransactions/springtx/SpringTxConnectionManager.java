@@ -25,16 +25,16 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import com.github.drinkjava2.jtransactions.ConnectionManager;
 
 /**
- * SpringConnectionManager is the implementation of ConnectionManager, get
+ * SpringTxConnectionManager is the implementation of ConnectionManager, get
  * connection and release connection by using Spring's DataSourceUtils methods
  * 
  * @author Yong Zhu
  * @since 1.0.0
  */
-public class SpringConnectionManager implements ConnectionManager {
-	private static SpringConnectionManager instance = new SpringConnectionManager();
+public class SpringTxConnectionManager implements ConnectionManager {
+	private static SpringTxConnectionManager instance = new SpringTxConnectionManager();
 
-	public static SpringConnectionManager instance() {
+	public static SpringTxConnectionManager instance() {
 		return instance;
 	}
 

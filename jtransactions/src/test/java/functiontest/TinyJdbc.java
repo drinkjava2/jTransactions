@@ -1,4 +1,4 @@
-package functiontest.com.github.drinkjava2.jtransactions;
+package functiontest;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
