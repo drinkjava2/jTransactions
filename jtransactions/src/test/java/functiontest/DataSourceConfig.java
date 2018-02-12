@@ -13,7 +13,7 @@ import com.zaxxer.hikari.HikariDataSource;
 public class DataSourceConfig {
 
 	// Change here to test on different database
-	public static class DataSourceBox extends MySqlDataSourceBox {
+	public static class DataSourceBox extends H2DataSourceBox {
 	}
 
 	// H2 DataSource

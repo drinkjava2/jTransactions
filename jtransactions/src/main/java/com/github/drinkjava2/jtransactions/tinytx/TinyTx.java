@@ -1,6 +1,7 @@
 package com.github.drinkjava2.jtransactions.tinytx;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -44,7 +45,7 @@ public class TinyTx implements CommonTx {
 		} else {
 			Connection conn;
 			try {
-				conn = cm.getConnection(ds);
+				conn = cm.getConnection(ds); 
 				TinyTxRuntimeException.assertNotNull(conn, "Connection can not get from DataSource in invoke method");
 			} catch (Exception e) {
 				throw new TinyTxRuntimeException(e);
@@ -53,8 +54,8 @@ public class TinyTx implements CommonTx {
 			try {
 				cm.startTransaction(ds, conn);
 				conn.setTransactionIsolation(transactionIsolation);
-				conn.setAutoCommit(false);
-				invokeResult = caller.proceed();
+				conn.setAutoCommit(false); 
+				invokeResult = caller.proceed(); 
 				conn.commit();
 			} catch (Throwable t) {
 				if (conn != null)
@@ -63,9 +64,17 @@ public class TinyTx implements CommonTx {
 					} catch (Exception e1) {
 						logger.warn(e1.getMessage());
 					}
-				throw new TinyTxRuntimeException(t);
-			} finally {
+				throw new TinyTxRuntimeException("TinyTx found a runtime Exception, transaction rollbacked.", t);
+			} finally {				
 				cm.endTransaction(ds);
+				SQLException closeExp = null;
+				try {
+					cm.releaseConnection(conn, ds);
+				} catch (SQLException e) {
+					closeExp = e;
+				}
+				if (closeExp != null)
+					throw new TinyTxRuntimeException("Exception happen when release connection.", closeExp);
 			}
 			return invokeResult;
 		}

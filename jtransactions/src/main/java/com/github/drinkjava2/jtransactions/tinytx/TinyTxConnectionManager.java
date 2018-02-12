@@ -45,7 +45,7 @@ public class TinyTxConnectionManager implements ConnectionManager {
 		return InnerTinyTxConnectionManager.INSTANCE;
 	}
 
-	private static final ThreadLocal<Map<DataSource, Connection>> threadLocalConnections = new ThreadLocal<Map<DataSource, Connection>>() {
+	public static final ThreadLocal<Map<DataSource, Connection>> threadLocalConnections = new ThreadLocal<Map<DataSource, Connection>>() {
 		@Override
 		protected Map<DataSource, Connection> initialValue() {
 			return new HashMap<DataSource, Connection>();

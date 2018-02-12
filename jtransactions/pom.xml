@@ -4,7 +4,7 @@
  
  <groupId>com.github.drinkjava2</groupId>
  <artifactId>jtransactions</artifactId>
- <version>1.0.0</version>
+ <version>1.0.1</version>
  <packaging>jar</packaging> 
  
  <name>jtransactions</name>
