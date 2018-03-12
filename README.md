@@ -8,13 +8,13 @@ SpringTx是对Spring声明式事务的包装，SpringTx适用于开发复杂的�
 jTransactions是一个可扩充的架构，将来可能会不断有新的事务实现添加进来。jTransactions运行环境为Java6或以上。 
 
 ### 如何引入项目?  
-方式一：手工下载jtransactions-1.0.0.jar并放置于项目的类目录。  
+方式一：手工下载jtransactions-1.0.1.jar并放置于项目的类目录。  
 方式二：在项目的pom.xml文件中加入如下行：
 ```
    <dependency>  
       <groupId>com.github.drinkjava2</groupId>  
       <artifactId>jtransactions</artifactId>  
-      <version>1.0.0</version>  
+      <version>1.0.1</version> <!--或Maven最新版--> 
    </dependency>
 ``` 
 注：  
