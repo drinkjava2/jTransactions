@@ -4,7 +4,7 @@
  
  <groupId>com.github.drinkjava2</groupId>
  <artifactId>jtransactions</artifactId>
- <version>1.0.1</version>
+ <version>1.0.2</version>
  <packaging>jar</packaging> 
  
  <name>jtransactions</name>
@@ -57,31 +57,7 @@
 
  <dependencies>   
 
-    <!-- jtransactions has no fixed 3rd party dependencies, but has an optional Spring dependencies  -->
-    
-    <!-- For projects only use TinyTx, no need add spring-tx in project's pom.xml, but if want use SpringTX, 
-       need copy below dependency to project's pom.xml and delete the optional lines, there is no easy way to 
-       extract Spring's transaction services without add lots Spring's dependencies,  I don't like it -->	
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-tx</artifactId>
-      <version>4.3.10.RELEASE</version> 
-	  <optional>true</optional>
-    </dependency> 
-	
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-jdbc</artifactId>
-      <version>4.3.10.RELEASE</version>
-      <optional>true</optional>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-aop</artifactId>
-      <version>4.3.10.RELEASE</version>
-      <optional>true</optional>
-    </dependency>
+    <!-- jTransactions has no any 3rd party dependencies --> 
 	
     <!-- ============================================================================= -->
     <!-- Below dependencies are for unit test only, scope set to "test"                --> 
@@ -104,6 +80,28 @@
       <groupId>log4j</groupId>  
       <artifactId>log4j</artifactId>  
       <version>1.2.17</version> 
+      <scope>test</scope> 
+    </dependency> 
+        
+     <!-- Test to for use Spring's Transaction services instead of TinyTx -->	
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+      <version>4.3.16.RELEASE</version> 
+	  <scope>test</scope> 
+    </dependency> 
+	
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>4.3.16.RELEASE</version>
+      <scope>test</scope> 
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+      <version>4.3.16.RELEASE</version>
       <scope>test</scope> 
     </dependency> 
     
