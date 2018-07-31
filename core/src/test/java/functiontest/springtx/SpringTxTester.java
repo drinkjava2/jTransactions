@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import com.github.drinkjava2.jbeanbox.AopAround;
 import com.github.drinkjava2.jbeanbox.BeanBox;
-import com.github.drinkjava2.jtransactions.springtx.SpringTxConnectionManager;
 
 import functiontest.DataSourceConfig.DataSourceBox;
 import functiontest.TinyJdbc;
@@ -54,6 +53,7 @@ public class SpringTxTester {
 			tester.tx_Insert1();// this one inserted 1 record
 			tester.tx_Insert2();// this one did not insert, roll back
 		} catch (Exception e) { 
+			e.printStackTrace();
 			System.out.println("div/0 exception found, tx_Insert2 should roll back");
 		}
 		Assert.assertEquals(1L, tiny.queryForObject("select count(*) from users"));
