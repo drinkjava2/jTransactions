@@ -1,12 +1,22 @@
 package functiontest.tinytx;
 
+import static com.github.drinkjava2.jbeanbox.JBEANBOX.getBean;
+import static com.github.drinkjava2.jbeanbox.JBEANBOX.inject;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import javax.sql.DataSource;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.drinkjava2.jbeanbox.AopAround;
 import com.github.drinkjava2.jbeanbox.BeanBox;
+import com.github.drinkjava2.jbeanbox.JBEANBOX;
+import com.github.drinkjava2.jbeanbox.annotation.AOP;
+import com.github.drinkjava2.jtransactions.tinytx.TinyTx;
 import com.github.drinkjava2.jtransactions.tinytx.TinyTxConnectionManager;
 
 import functiontest.DataSourceConfig.DataSourceBox;
@@ -21,14 +31,27 @@ import functiontest.TinyJdbc;
  * @since 1.0.0
  */
 public class TinyTxTester {
-	TinyJdbc tiny = new TinyJdbc((DataSource) BeanBox.getBean(DataSourceBox.class), TinyTxConnectionManager.instance());
+	TinyJdbc tiny = new TinyJdbc((DataSource) getBean(DataSourceBox.class), TinyTxConnectionManager.instance());
 
-	@AopAround(TinyTxBox.class)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.METHOD })
+	@AOP
+	public static @interface TX {
+		public Class<?> value() default TheTxBox.class;
+	}
+
+	public static class TheTxBox extends BeanBox {
+		{
+			this.injectConstruct(TinyTx.class, DataSource.class, inject(DataSourceBox.class));
+		}
+	}
+	
+	@TX 
 	public void tx_Insert1() {
 		tiny.executeSql("insert into users (id) values('123')");
 	}
 
-	@AopAround(TinyTxBox.class)
+	@TX 
 	public void tx_Insert2() {
 		tiny.executeSql("insert into users (id) values('456')");
 		Assert.assertEquals(2L, tiny.queryForObject("select count(*) from users"));
@@ -57,7 +80,7 @@ public class TinyTxTester {
 			System.out.println("div/0 exception found, tx_Insert2 should roll back");
 		}
 		Assert.assertEquals(1L, tiny.queryForObject("select count(*) from users"));
-		BeanBox.defaultContext.close();// Release DataSource Pool
+		JBEANBOX.bctx().close();// Release DataSource Pool
 	}
 
 }

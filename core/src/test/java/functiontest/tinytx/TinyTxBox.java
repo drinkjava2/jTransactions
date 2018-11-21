@@ -15,6 +15,6 @@ import functiontest.DataSourceConfig.DataSourceBox;
  */
 public class TinyTxBox extends BeanBox {
 	{
-		this.setConstructor(TinyTx.class, BeanBox.getBean(DataSourceBox.class), Connection.TRANSACTION_READ_COMMITTED);
+		this.injectConstruct(TinyTx.class, BeanBox.getBean(DataSourceBox.class), Connection.TRANSACTION_READ_COMMITTED);
 	}
 }
