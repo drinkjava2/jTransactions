@@ -15,14 +15,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 
-import javax.sql.DataSource;
-
 import com.github.drinkjava2.jtransactions.ConnectionManager;
 import com.github.drinkjava2.jtransactions.TransactionsException;
+import com.github.drinkjava2.jtransactions.TxResult;
 
 /**
- * JFinalConnectionManager is the implementation of ConnectionManager, get
- * connection and release connection from jFinal environment
+ * JFinalTxManager is the implementation of ConnectionManager, get connection
+ * and release connection from jFinal environment
  * 
  * @author Yong Zhu
  * @since 1.0.0
@@ -40,7 +39,7 @@ public class JFinalTxConnectionManager implements ConnectionManager {
 			dbKitClass = Class.forName("com.jfinal.plugin.activerecord.DbKit");
 			configClass = Class.forName("com.jfinal.plugin.activerecord.Config");
 		} catch (ClassNotFoundException e) {
-			throw new TransactionsException("Error: jfinal jar missing, fail to build JFinalTxConnectionManager.", e);
+			throw new TransactionsException("Error: jfinal jar missing, fail to build JFinalTxManager.", e);
 		}
 
 		try {
@@ -50,16 +49,15 @@ public class JFinalTxConnectionManager implements ConnectionManager {
 			isInTransactionMethod = configClass.getMethod("isInTransaction");
 
 		} catch (Exception e) {
-			throw new TransactionsException("Error: JFinalTxConnectionManager initialize failed.", e);
+			throw new TransactionsException("Error: JFinalTxManager initialize failed.", e);
 		}
-		TransactionsException.assureNotNull(getConfigMethod,
-				"Fail to get getConfigMethod method in JFinalTxConnectionManager.");
+		TransactionsException.assureNotNull(getConfigMethod, "Fail to get getConfigMethod method in JFinalTxManager.");
 		TransactionsException.assureNotNull(releaseConnectionMethod,
-				"Fail to get releaseConnectionMethod method in JFinalTxConnectionManager.");
+				"Fail to get releaseConnectionMethod method in JFinalTxManager.");
 		TransactionsException.assureNotNull(getConnectionMethod,
-				"Fail to get getConnectionMethod method in JFinalTxConnectionManager.");
+				"Fail to get getConnectionMethod method in JFinalTxManager.");
 		TransactionsException.assureNotNull(isInTransactionMethod,
-				"Fail to get isInTransactionMethod method in JFinalTxConnectionManager.");
+				"Fail to get isInTransactionMethod method in JFinalTxManager.");
 	}
 
 	private static class JFinalTxConnectionManagerSingleton {// NOSONAR
@@ -71,42 +69,64 @@ public class JFinalTxConnectionManager implements ConnectionManager {
 		return JFinalTxConnectionManagerSingleton.INSTANCE;
 	}
 
-	@Override
-	public Connection getConnection(DataSource dataSource) {
-		try {
-			Object config = getConfig();
-			return (Connection) getConnectionMethod.invoke(config);
-		} catch (Exception e) {
-			throw new TransactionsException("Error: JFinalTxConnectionManager fail to get connection.", e);
-		}
+	private Object getConfig() throws IllegalAccessException, InvocationTargetException {
+		Object config = getConfigMethod.invoke(null);
+		TransactionsException.assureNotNull(config, "Error: get a null jFinal config in JFinalTxManager.");
+		return config;
 	}
 
 	@Override
-	public void releaseConnection(Connection conn, DataSource dataSource) {
-		try {
-			Object config = getConfig();
-			releaseConnectionMethod.invoke(config, conn);
-		} catch (Exception e) {
-			throw new TransactionsException("Error: JFinalTxConnectionManager fail to release connection.", e);
-		}
-	}
-
-	@Override
-	public boolean isInTransaction(DataSource ds) {
-		if (ds == null)
-			return false;
+	public boolean isInTransaction() {
 		try {
 			Object config = getConfig();
 			return null != isInTransactionMethod.invoke(config);
 		} catch (Exception e) {
-			throw new TransactionsException("Error: JFinalTxConnectionManager fail to get transaction status.", e);
+			throw new TransactionsException("Error: JFinalTxManager fail to get transaction status.", e);
 		}
 	}
 
-	private Object getConfig() throws IllegalAccessException, InvocationTargetException {
-		Object config = getConfigMethod.invoke(null);
-		TransactionsException.assureNotNull(config, "Error: get a null jFinal config in JFinalTxConnectionManager.");
-		return config;
+	@Override
+	public void startTransaction() {
+		throw new TransactionsException(
+				"startTransaction method not implemented by current version, please use JFinal's method directly or submit a pull request");
+	}
+
+	@Override
+	public void startTransaction(int txIsolationLevel) {
+		throw new TransactionsException(
+				"startTransaction method not implemented by current version, please use JFinal's method directly or submit a pull request");
+	}
+
+	@Override
+	public Connection getConnection(Object dsOrHolder) {
+		try {
+			Object config = getConfig();
+			return (Connection) getConnectionMethod.invoke(config);
+		} catch (Exception e) {
+			throw new TransactionsException("Error: JFinalTxManager fail to get connection.", e);
+		}
+	}
+
+	@Override
+	public void releaseConnection(Connection conn, Object dsOrHolder) {
+		try {
+			Object config = getConfig();
+			releaseConnectionMethod.invoke(config, conn);
+		} catch (Exception e) {
+			throw new TransactionsException("Error: JFinalTxManager fail to release connection.", e);
+		}
+	}
+
+	@Override
+	public TxResult commitTransaction() throws Exception {
+		throw new TransactionsException(
+				"commit method not implemented by current version, please use JFinal's method directly");
+	}
+
+	@Override
+	public TxResult rollbackTransaction() {
+		throw new TransactionsException(
+				"rollback method not implemented by current version, please use JFinal's method directly");
 	}
 
 }

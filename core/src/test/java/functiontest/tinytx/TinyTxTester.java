@@ -1,7 +1,6 @@
 package functiontest.tinytx;
 
 import static com.github.drinkjava2.jbeanbox.JBEANBOX.getBean;
-import static com.github.drinkjava2.jbeanbox.JBEANBOX.inject;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,7 +15,7 @@ import org.junit.Test;
 import com.github.drinkjava2.jbeanbox.BeanBox;
 import com.github.drinkjava2.jbeanbox.JBEANBOX;
 import com.github.drinkjava2.jbeanbox.annotation.AOP;
-import com.github.drinkjava2.jtransactions.tinytx.TinyTx;
+import com.github.drinkjava2.jtransactions.tinytx.TinyTxAOP;
 import com.github.drinkjava2.jtransactions.tinytx.TinyTxConnectionManager;
 
 import functiontest.DataSourceConfig.DataSourceBox;
@@ -37,21 +36,15 @@ public class TinyTxTester {
 	@Target({ ElementType.METHOD })
 	@AOP
 	public static @interface TX {
-		public Class<?> value() default TheTxBox.class;
+		public Class<?> value() default TinyTxAOP.class;
 	}
 
-	public static class TheTxBox extends BeanBox {
-		{
-			this.injectConstruct(TinyTx.class, DataSource.class, inject(DataSourceBox.class));
-		}
-	}
-	
-	@TX 
+	@TX
 	public void tx_Insert1() {
 		tiny.executeSql("insert into users (id) values('123')");
 	}
 
-	@TX 
+	@TX
 	public void tx_Insert2() {
 		tiny.executeSql("insert into users (id) values('456')");
 		Assert.assertEquals(2L, tiny.queryForObject("select count(*) from users"));

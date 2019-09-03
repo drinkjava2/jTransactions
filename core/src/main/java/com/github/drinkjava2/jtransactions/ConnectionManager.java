@@ -14,8 +14,6 @@ package com.github.drinkjava2.jtransactions;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
 /**
  * A ConnectionManager implementation determine how to get or release connection
  * from DataSource or ThreadLocal or from Spring or JTA or some container...
@@ -24,23 +22,32 @@ import javax.sql.DataSource;
  * @since 1.0.0
  */
 public interface ConnectionManager {
+
+	/** Start a transaction with default connection isolation level */
+	public void startTransaction();
+
+	/** Start a transaction with given connection isolation level */
+	public void startTransaction(int txIsolationLevel);
+
+	/** Check if is in transaction */
+	public boolean isInTransaction();
+
 	/**
 	 * A ConnectionManager implementation determine how to get connection from
-	 * DataSource or ThreadLocal or from Spring or JTA or some container...
+	 * DataSource or DataSourceHolder or ThreadLocal or from Spring or JTA or some
+	 * container...
 	 */
-	public Connection getConnection(DataSource dataSource) throws SQLException;
+	public Connection getConnection(Object dsOrHolder) throws SQLException;
 
 	/**
 	 * A ConnectionManager implementation determine how to close connection or
-	 * return connection to ThreadLocal or return to Spring or JTA or some
-	 * container...
+	 * return to ThreadLocal or return to Spring or JTA or some container...
 	 */
-	public void releaseConnection(Connection conn, DataSource dataSource) throws SQLException;
+	public void releaseConnection(Connection conn, Object dsOrHolder) throws SQLException;
 
-	/**
-	 * Check if a connection already be get from given dataSource and be cached as
-	 * it started a Transaction
-	 */
-	boolean isInTransaction(DataSource dataSource);
+	/** Commit the transaction, */
+	public TxResult commitTransaction() throws Exception;
 
+	/** Roll back soft transaction */
+	public TxResult rollbackTransaction();
 }

@@ -17,10 +17,12 @@ import java.sql.Connection;
 import javax.sql.DataSource;
 
 import com.github.drinkjava2.jtransactions.ConnectionManager;
+import com.github.drinkjava2.jtransactions.DataSourceHolder;
 import com.github.drinkjava2.jtransactions.TransactionsException;
+import com.github.drinkjava2.jtransactions.TxResult;
 
 /**
- * SpringConnectionManager is the implementation of ConnectionManager, get
+ * SpringTxConnectionManager is the implementation of ConnectionManager, get
  * connection and release connection from Spring environment
  * 
  * @author Yong Zhu
@@ -29,7 +31,7 @@ import com.github.drinkjava2.jtransactions.TransactionsException;
 public class SpringTxConnectionManager implements ConnectionManager {
 	protected final Method getConnectionMethod;
 	protected final Method releaseConnectionMethod;
-	protected final Method getResourceMethod;
+	protected final Method isActualTransactionActive;
 
 	public SpringTxConnectionManager() {
 		Class<?> dataSourceUtilClass;
@@ -51,7 +53,7 @@ public class SpringTxConnectionManager implements ConnectionManager {
 			getConnectionMethod = dataSourceUtilClass.getMethod("getConnection", DataSource.class);
 			releaseConnectionMethod = dataSourceUtilClass.getMethod("releaseConnection", Connection.class,
 					DataSource.class);
-			getResourceMethod = transactionSynchronizationManagerClass.getMethod("getResource", Object.class);
+			isActualTransactionActive = transactionSynchronizationManagerClass.getMethod("isActualTransactionActive");
 		} catch (Exception e) {
 			throw new TransactionsException("Error: SpringTxConnectionManager initialize failed.", e);
 		}
@@ -66,13 +68,30 @@ public class SpringTxConnectionManager implements ConnectionManager {
 		return SpringTxConnectionManagerSingleton.INSTANCE;
 	}
 
+	@Override
+	public void startTransaction() {
+		throw new TransactionsException(
+				"startTransaction method not implemented by current version, please use Spring's method directly or submit a pull request");
+	}
+
+	@Override
+	public void startTransaction(int txIsolationLevel) {
+		throw new TransactionsException(
+				"startTransaction method not implemented by current version, please use Spring's method directly or submit a pull request");
+	}
+
 	/*
 	 * Equal to Spring's DataSourceUtils.getConnection()
 	 */
 	@Override
-	public Connection getConnection(DataSource dataSource) {
+	public Connection getConnection(Object dsOrHolder) {
+		DataSource ds;
+		if (dsOrHolder instanceof DataSource)
+			ds = (DataSource) dsOrHolder;
+		else
+			ds = ((DataSourceHolder) dsOrHolder).getDataSource();
 		try {
-			return (Connection) getConnectionMethod.invoke(null, dataSource);
+			return (Connection) getConnectionMethod.invoke(null, ds);
 		} catch (Exception e) {
 			throw new TransactionsException("Error: SpringTxConnectionManager fail to get connection from dataSource.",
 					e);
@@ -83,23 +102,38 @@ public class SpringTxConnectionManager implements ConnectionManager {
 	 * Equal to Spring's DataSourceUtils.releaseConnection()
 	 */
 	@Override
-	public void releaseConnection(Connection conn, DataSource dataSource) {
+	public void releaseConnection(Connection conn, Object dsOrHolder) {
+		DataSource ds;
+		if (dsOrHolder instanceof DataSource)
+			ds = (DataSource) dsOrHolder;
+		else
+			ds = ((DataSourceHolder) dsOrHolder).getDataSource();
 		try {
-			releaseConnectionMethod.invoke(null, conn, dataSource);
+			releaseConnectionMethod.invoke(null, conn, ds);
 		} catch (Exception e) {
 			throw new TransactionsException("Error: SpringTxConnectionManager fail to release connection.", e);
 		}
 	}
 
 	@Override
-	public boolean isInTransaction(DataSource ds) {
-		if (ds == null)
-			return false;
+	public boolean isInTransaction() {
 		try {
-			return null != getResourceMethod.invoke(null, ds);
+			return null != isActualTransactionActive.invoke(null);
 		} catch (Exception e) {
 			throw new TransactionsException("Error: SpringTxConnectionManager fail to get transaction status.", e);
 		}
+	}
+
+	@Override
+	public TxResult commitTransaction() throws Exception {
+		throw new TransactionsException(
+				"commit method not implemented by current version, please use Spring's method directly");
+	}
+
+	@Override
+	public TxResult rollbackTransaction() {
+		throw new TransactionsException(
+				"rollback method not implemented by current version, please use Spring's method directly");
 	}
 
 }
